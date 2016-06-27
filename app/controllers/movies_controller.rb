@@ -15,14 +15,6 @@ class MoviesController < ApplicationController
 
   def index 
     @movies = Movie.order(params[:sort_param])
-
-    
-    #if :sort_param = 'title'
-     # th = hilite
-    #elsif :sort_param = 'release_date'
-     # th = hilite
-    #end
-
   end
 
 
