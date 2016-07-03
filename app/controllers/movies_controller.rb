@@ -10,8 +10,12 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
-  def index 
+  def index
+  # GO DEEP: http://stackoverflow.com/questions/10972300/in-rails-with-check-box-tag-how-do-i-keep-the-checkboxes-checked-after-submitt 
     @movies = Movie.order(params[:sort_param])
+    @movies = @movies.where(:rating => params[:ratings].keys) if params[:ratings].present?
+    @all_ratings = Movie.uniq.pluck(:rating)  
+    
   end
 
 
@@ -43,4 +47,17 @@ class MoviesController < ApplicationController
     redirect_to movies_path
   end
 
+=begin
+
+  def filter
+    @movies = Movie.where(:rating => @filtered)
+    @filtered = []
+
+    if check_box_tag == true
+      @filtered.push(:rating)
+    end
+  end
+  http://stackoverflow.com/questions/15034262/how-to-push-keys-and-values-into-an-empty-hash-w-ruby
+  http://stackoverflow.com/questions/20235206/ruby-get-all-keys-in-a-hash-including-sub-keys
+=end
 end
