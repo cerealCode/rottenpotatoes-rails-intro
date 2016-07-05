@@ -21,7 +21,7 @@ class MoviesController < ApplicationController
     elsif params[:ratings].present?
       @movies = @movies.where(:rating => params[:ratings].keys) 
     else
-      @movies = Movie.order(params[:sort_param])
+      @movies = Movie.all
     end
 
 
