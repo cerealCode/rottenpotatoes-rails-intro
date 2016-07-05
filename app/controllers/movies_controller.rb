@@ -11,13 +11,24 @@ class MoviesController < ApplicationController
   end
 
   def index
-  # GO DEEP: http://stackoverflow.com/questions/10972300/in-rails-with-check-box-tag-how-do-i-keep-the-checkboxes-checked-after-submitt 
+    
     @movies = Movie.order(params[:sort_param])
-    @movies = @movies.where(:rating => params[:ratings].keys) if params[:ratings].present?
-    @all_ratings = Movie.uniq.pluck(:rating)  
-    @selected_ratings = (params[:ratings].present? ? params[:ratings] : [])
+    @all_ratings = Movie.uniq.pluck(:rating) 
+
+    #takes 2 refresh to apply second filter
+    if session[:selected_ratings] != []
+      @movies = @movies.where(:rating => session[:selected_ratings]) 
+    elsif params[:ratings].present?
+      @movies = @movies.where(:rating => params[:ratings].keys) 
+    else
+      @movies = Movie.order(params[:sort_param])
+    end
 
 
+    #if these 2 are moved under @all_ratings, it doesn't remember filter!!
+    @selected_ratings = (params[:ratings].present? ? params[:ratings].keys : []) 
+    session[:selected_ratings] = @selected_ratings 
+  
   end
 
 
@@ -49,17 +60,5 @@ class MoviesController < ApplicationController
     redirect_to movies_path
   end
 
-=begin
 
-  def filter
-    @movies = Movie.where(:rating => @filtered)
-    @filtered = []
-
-    if check_box_tag == true
-      @filtered.push(:rating)
-    end
-  end
-  http://stackoverflow.com/questions/15034262/how-to-push-keys-and-values-into-an-empty-hash-w-ruby
-  http://stackoverflow.com/questions/20235206/ruby-get-all-keys-in-a-hash-including-sub-keys
-=end
 end
