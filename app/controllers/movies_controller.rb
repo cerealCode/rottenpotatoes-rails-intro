@@ -11,23 +11,33 @@ class MoviesController < ApplicationController
   end
 
   def index
-    
     @movies = Movie.order(params[:sort_param])
     @all_ratings = Movie.uniq.pluck(:rating) 
+    @selected_ratings = (params[:ratings].present? ? params[:ratings].keys : []) 
+    @sort_param = (params[:sort_param].present? ? params[:sort_param] : [])
 
-    #takes 2 refresh to apply second filter
-    if session[:selected_ratings] != []
-      @movies = @movies.where(:rating => session[:selected_ratings]) 
-    elsif params[:ratings].present?
-      @movies = @movies.where(:rating => params[:ratings].keys) 
-    else
-      @movies = Movie.all
+    if @sort_param != []
+      session[:sort_param] = @sort_param
     end
 
+    if session[:sort_param] != []
+      @movies = @movies.order(session[:sort_param])
+    end
+    
+    if @selected_ratings != [] 
+      session[:selected_ratings] = @selected_ratings
+    end
 
-    #if these 2 are moved under @all_ratings, it doesn't remember filter!!
-    @selected_ratings = (params[:ratings].present? ? params[:ratings].keys : []) 
-    session[:selected_ratings] = @selected_ratings 
+    if session[:selected_ratings] != []
+      @movies = @movies.where(:rating => session[:selected_ratings]) 
+      #add rating to session    
+    elsif params[:ratings].present? &&  session[:selected_ratings] == []
+      @movies = @movies.where(:rating => params[:ratings].keys) 
+    else
+      @movies = Movie.order(params[:sort_param])
+    end
+
+    
   
   end
 
